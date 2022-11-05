@@ -224,7 +224,17 @@ grafico_especie_tamanho_sepala <-
     fill = "Tamanho da Sépala"
   )
 
-teste
+library(caret)
+
+ctr <- trainControl(method = "cv", number = 10)
+
+neural_caret_species <- train(Species ~ ., data = banco_iris, method = "nnet", trainControl = ctr)
+
+preditos_species <- predict.train(neural_caret_species)
+
+mc <- table(banco_iris$Species, preditos_species)
+
+confusionMatrix(mc)
 
 ## Exemplo 2: usando pnad contínua -----------------
 
