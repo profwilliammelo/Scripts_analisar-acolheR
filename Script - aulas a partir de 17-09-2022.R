@@ -197,9 +197,9 @@ tabela_contingencia <-
   adorn_totals() %>%
   adorn_percentages(denominator = "row")
 
-# Estilizando a tabel
+# Estilizando a tabela
 
-tabela_contingencia %>% adorn_pct_formatting() %>% flextable::flextable() %>% flextable::theme_apa()
+tabela_contingencia %>% adorn_pct_formatting() %>% flextable::flextable() %>% flextable::theme_zebra()
 
 # Teste de qui-quadrado
 
