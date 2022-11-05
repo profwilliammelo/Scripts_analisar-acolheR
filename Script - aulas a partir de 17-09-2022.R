@@ -224,6 +224,7 @@ grafico_especie_tamanho_sepala <-
     fill = "Tamanho da Sépala"
   )
 
+teste
 
 ## Exemplo 2: usando pnad contínua -----------------
 
