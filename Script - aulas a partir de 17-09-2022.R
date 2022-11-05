@@ -194,8 +194,8 @@ tabela_descricao_especie <- banco_iris %>% tabyl(Species)
 
 tabela_contingencia <-
   banco_iris %>% tabyl(Species, tamanho_sepala) %>%
-  adorn_totals() %>%
-  adorn_percentages(denominator = "row")
+  adorn_totals(where = c("row","col")) %>% # adicao de totais das linhas e das colunas
+  adorn_percentages(denominator = "row") # total das linhas usado como denominador dos percentuais
 
 # Estilizando a tabela
 
@@ -205,6 +205,24 @@ tabela_contingencia %>% adorn_pct_formatting() %>% flextable::flextable() %>% fl
 
 banco_iris %>% tabyl(Species, tamanho_sepala) %>% chisq.test()
 
+# Analise grafica
+
+tabela_contingencia_pivotada <-  banco_iris %>% tabyl(Species, tamanho_sepala) %>% adorn_percentages() %>%
+  pivot_longer(cols = c(grande, pequena), names_to = "tamanho_sepala", values_to = "percentual") # as categorias das colunas foram colocadas nas linhas como nova variavel de tamanho da sepala, para produzir grafico com mais facilidade
+
+grafico_especie_tamanho_sepala <-
+  tabela_contingencia_pivotada %>% ggplot(aes(x = Species, y = percentual, fill = tamanho_sepala)) +
+  geom_col(col = "black") +
+  geom_label(aes(label = scales::percent(percentual)),
+             position = position_fill(),
+             show.legend = F) +
+  theme_bw() +
+  labs(
+    title = "Percentual de tamanhos de sepala por espécie de flor",
+    subtitle = "Base Iris",
+    caption = "Analisar&AcolheR2022.2",
+    fill = "Tamanho da Sépala"
+  )
 
 
 ## Exemplo 2: usando pnad contínua -----------------
