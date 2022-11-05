@@ -236,6 +236,8 @@ mc <- table(banco_iris$Species, preditos_species)
 
 confusionMatrix(mc)
 
+acuracia <- confusionMatrix(mc)$overall[1]
+
 ## Exemplo 2: usando pnad contínua -----------------
 
 
