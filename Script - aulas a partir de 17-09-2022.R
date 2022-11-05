@@ -25,7 +25,7 @@ mean(idade, na.rm = T)
 desvios_quadraticos <- NULL
 
 for (i in 1:n){print(i)
-  
+
   desvios_quadraticos[i] <- (idade[i]-media_idade)^2
 }
 
@@ -49,11 +49,11 @@ sd(idade)
 
 ## Grafico descritivo - frequencia
 
-banco_de_dados <- data.frame(idade) 
+banco_de_dados <- data.frame(idade)
 
 banco_de_dados$idade
 
-grafico <- banco_de_dados %>%  
+grafico <- banco_de_dados %>%
   ggplot(mapping = aes(x = idade)) +
   geom_bar(fill = "green", col = "black") +
   scale_y_continuous(limits = c(0,1), breaks = c(0, 1)) +
@@ -65,22 +65,22 @@ grafico <- banco_de_dados %>%
 
 
 grafico_descritivo_idade <-
-  
+
  data.frame(idade) %>%
  ggplot(aes(x = idade)) +
- geom_bar(fill = "blue", col = "black") + 
+ geom_bar(fill = "blue", col = "black") +
  scale_y_continuous(limits = c(0, 1), breaks = c(0, 1)) +
  theme_linedraw()
-  
+
 
 # CRIANDO OUTRA VARIAVEL DISCRETA (ESCOLARIDADE - ANOS DE ESTUDO)
 
-anos_estudo <- c(8, 6, 5, 7, 9, 10) 
+anos_estudo <- c(8, 6, 5, 7, 9, 10)
 
 # Olhando para a correlacao entre idade e anos de estudo ------------------
 
-grafico_idade_anos_estudo <- 
-  
+grafico_idade_anos_estudo <-
+
   data.frame(idade, anos_estudo) %>%
   ggplot(aes(x = idade, y = anos_estudo)) +
   geom_point(col = "black") +
@@ -120,7 +120,7 @@ pnadc_2020 <- pnadc_2020 %>% mutate(renda_trabalho = VD4019,
 options(scipen = 999) # desligando notacao cientifica
 
 grafico_renda_hist <-
-  
+
 pnadc_2020 %>%
   ggplot(aes(x = renda_trabalho, y = stat(density))) +
   geom_histogram(col = "black", fill = "blue", binwidth = 30) +
@@ -157,12 +157,12 @@ grafico_log_renda_densidade <-
   ylab("Densidade de frequência")
 
 
-grafico_boxplot_renda <- 
+grafico_boxplot_renda <-
   pnadc_2020 %>%
   ggplot(aes(y = log(renda_trabalho, weight = peso))) +
   geom_boxplot(col = "black", fill = "blue")
 
-grafico_boxplot_renda_x <- 
+grafico_boxplot_renda_x <-
   pnadc_2020 %>%
   ggplot(aes(x = log(renda_trabalho), weight = peso)) +
   geom_boxplot(col = "black", fill = "blue")
@@ -184,16 +184,25 @@ banco_iris <- iris
 
 banco_iris <- banco_iris %>% mutate(tamanho_sepala = ifelse(Sepal.Length >= 6, "grande", "pequena"))
 
+# banco_iris <- banco_iris %>% mutate(tamanho_sepala = case_when(Sepal.Length >= 6 ~ "grande", T ~ "pequena"))
+
+
 library(janitor)
 
-tabela_descricao <- banco_iris %>% tabyl(tamanho_sepala)
+tabela_descricao_sepala <- banco_iris %>% tabyl(tamanho_sepala)
+tabela_descricao_especie <- banco_iris %>% tabyl(Species)
 
 tabela_contingencia <-
   banco_iris %>% tabyl(Species, tamanho_sepala) %>%
   adorn_totals() %>%
   adorn_percentages(denominator = "row")
 
-                  
+# Estilizando a tabel
+
+tabela_contingencia %>% adorn_pct_formatting() %>% flextable::flextable() %>% flextable::theme_apa()
+
+# Teste de qui-quadrado
+
 banco_iris %>% tabyl(Species, tamanho_sepala) %>% chisq.test()
 
 
@@ -216,15 +225,15 @@ grafico_descritivo_anos_estudo_com_peso <-
   geom_bar(fill = "blue", col = "black") +
   theme_classic() +
   coord_flip()
-  
-grafico_descritivo_anos_estudo_com_peso_porcentagem <- 
+
+grafico_descritivo_anos_estudo_com_peso_porcentagem <-
   tabela_anos_estudo_raca_com_peso %>%
   ggplot(aes(x = anos_estudo, y = percentual_anos_estudo)) +
   geom_col(fill = "blue", col = "black") +
   theme_classic() +
   coord_flip()
 
-ggpubr::ggarrange(grafico_descritivo_anos_estudo_com_peso, 
+ggpubr::ggarrange(grafico_descritivo_anos_estudo_com_peso,
                   grafico_descritivo_anos_estudo_com_peso_porcentagem, ncol = 1)
 
 
@@ -249,9 +258,9 @@ hchart(
   type = "area",
   color = "brown",
   name = "Negros"
-) %>% 
+) %>%
   hc_add_series(
-  density(x = pnadc_2020$log_renda_trabalho[pnadc_2020$raca == "branco"], 
+  density(x = pnadc_2020$log_renda_trabalho[pnadc_2020$raca == "branco"],
           na.rm = T,
           weights = pnadc_2020$peso[pnadc_2020$raca == "branco"]),
   type = "area",
@@ -266,7 +275,7 @@ grafico_log_renda_densidade_raca_sem_peso <-
   geom_density(col = "black", aes(fill = raca), alpha = 0.5) +
   ggtitle("Sem peso")
 
-ggpubr::ggarrange(grafico_log_renda_densidade_raca_com_peso, 
+ggpubr::ggarrange(grafico_log_renda_densidade_raca_com_peso,
                   grafico_log_renda_densidade_raca_sem_peso, ncol = 1)
 
 tabela_renda_raca <-
