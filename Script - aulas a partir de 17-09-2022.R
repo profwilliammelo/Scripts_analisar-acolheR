@@ -226,15 +226,32 @@ grafico_especie_tamanho_sepala <-
 
 library(caret)
 
-ctr <- trainControl(method = "cv", number = 10)
+ctr <- trainControl(method = "cv", number = 5)
 
 neural_caret_species <- train(Species ~ ., data = banco_iris, method = "nnet", trainControl = ctr)
 
 preditos_species <- predict.train(neural_caret_species)
 
+banco_iris$setosa <- ifelse(banco_iris$Species == "setosa" , 1, 0)
+banco_iris$virginica <- ifelse(banco_iris$Species == "virginica" , 1, 0)
+banco_iris$versicolor <- ifelse(banco_iris$Species == "versicolor" , 1, 0)
+knn_caret_setosa <- train(as.factor(setosa) ~ ., data = banco_iris, method = "knn")
+knn_caret_virginica <- train(as.factor(virginica) ~ ., data = banco_iris, method = "knn")
+knn_caret_versicolor <- train(as.factor(versicolor) ~ ., data = banco_iris, method = "knn")
+
+preditos_knn_setosa <- predict.train(knn_caret_setosa)
+preditos_knn_virginica <- predict.train(knn_caret_virginica)
+preditos_knn_versicolor <- predict.train(knn_caret_versicolor)
+
+preditos_species_knn <- case_when(preditos_knn_setosa == 1 ~ "setosa",
+                                  preditos_knn_virginica == 1 ~ "virginica",
+                                  preditos_knn_versicolor == 1 ~ "versicolor")
+
 mc <- table(banco_iris$Species, preditos_species)
+mc_knn <-  table(banco_iris$Species, preditos_species_knn)
 
 confusionMatrix(mc)
+confusionMatrix(mc_knn)
 
 acuracia <- confusionMatrix(mc)$overall[1]
 
