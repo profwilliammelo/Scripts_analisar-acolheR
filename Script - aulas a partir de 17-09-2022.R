@@ -224,6 +224,8 @@ grafico_especie_tamanho_sepala <-
     fill = "Tamanho da Sépala"
   )
 
+# Algumas analises de predição usando modelos de Machine Learning
+{
 library(caret)
 
 ctr <- trainControl(method = "cv", number = 5)
@@ -254,6 +256,8 @@ confusionMatrix(mc)
 confusionMatrix(mc_knn)
 
 acuracia <- confusionMatrix(mc)$overall[1]
+
+}
 
 ## Exemplo 2: usando pnad contínua -----------------
 
@@ -293,10 +297,40 @@ grafico_log_renda_densidade_raca_com_peso <-
   filter(!is.na(raca)) %>%
   ggplot(aes(x = log(renda_trabalho))) +
   geom_density(col = "black", aes(fill = raca, weight = peso), alpha = 0.5) +
-  ggtitle("Com peso")
+  ggtitle("Desigualdade racial de renda - Com peso amostral")
+
+grafico_log_renda_densidade_raca_com_peso_facet <-
+  pnadc_2020 %>%
+  filter(!is.na(raca)) %>%
+  ggplot(aes(x = log(renda_trabalho), weight = peso)) +
+  geom_density(col = "black", fill = "pink", alpha = 0.5) +
+  facet_wrap(~raca) +
+  ggtitle("Desigualdade racial de renda - Com peso amostral")
+
+grafico_log_renda_boxplot_raca_com_peso <-
+  pnadc_2020 %>%
+  filter(!is.na(raca)) %>%
+  ggplot(aes(x = raca, y = log(renda_trabalho), weight = peso)) +
+  geom_boxplot(col = "black", fill = "pink") +
+  ggtitle("Desigualdade racial de renda - Com peso amostral")
+
+tabela_renda_raca <-
+  pnadc_2020 %>%
+  mutate(`Raça` = raca) %>%
+  filter(!is.na(`Raça`)) %>%
+  group_by(`Raça`) %>%
+  summarise(`Media de renda` = paste("R$", round(weighted.mean(x = renda_trabalho, w = peso, na.rm = T),2))) %>%
+  flextable::qflextable()
+
+tabela_renda_raca_desvio_padrao <- pnadc_2020 %>%
+  mutate(`Raça` = raca) %>%
+  filter(!is.na(`Raça`)) %>%
+  group_by(`Raça`) %>%
+  summarise(`Desvio padrao de renda` = paste("R$", round(sqrt(Hmisc::wtd.var(x = renda_trabalho, weights = peso, na.rm = T)), 2)))
+
 
 # Highcharter
-
+library(highcharter)
 hchart(
   density(
     x = pnadc_2020$log_renda_trabalho[pnadc_2020$raca == "negro"],
@@ -326,10 +360,4 @@ grafico_log_renda_densidade_raca_sem_peso <-
 ggpubr::ggarrange(grafico_log_renda_densidade_raca_com_peso,
                   grafico_log_renda_densidade_raca_sem_peso, ncol = 1)
 
-tabela_renda_raca <-
-  pnadc_2020 %>%
-  mutate(`Raça` = raca) %>%
-  filter(!is.na(`Raça`)) %>%
-  group_by(`Raça`) %>%
-  summarise(`Media de renda` = round(weighted.mean(x = renda_trabalho, w = peso, na.rm = T),2)) %>%
-  flextable::qflextable()
+plotly::ggplotly(grafico_log_renda_boxplot_raca_com_peso)
