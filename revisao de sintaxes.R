@@ -99,14 +99,25 @@ banco_dados$alunos_curso[banco_dados$salario == "3 salarios"]
 ## Pacote dyplr -------------------------
 
 #install.packages("tidyverse") # inclui dyplr, ggplot e outros que sao compativeis com o operador %>%
+
 library(tidyverse)
 
-banco_dados <- banco_dados %>% mutate(teste = ifelse(is.na(teste), 0, teste))
+banco_dados <- banco_dados %>% mutate(teste = ifelse(is.na(teste), 0, teste),
+                                      alunos_afroR = alunos_curso,
+                                      nomes_curso = case_when(alunos_curso == "Rafael" ~ "é o Rafael",
+                                                              alunos_curso == "William" ~ "é o William",
+                                                              alunos_curso == "Alan" ~ "é o Alan",
+                                                              T ~ "não é nem Rafael, nem William e nem Alan"),
+                                      nomes_curso2 = ifelse(alunos_curso == "Rafael", "é o Rafael",
+                                                            ifelse(alunos_curso == "William", "é o William",
+                                                                   ifelse(alunos_curso == "Alan", "é o Alan",
+                                                                          "não é nem William, nem Rafael e nem Alan"))))
 
 banco_dados %>% filter(salario == "3 salarios") %>% select(alunos_curso, salario)
 
 
-group_by(genero), summarise flextable
+
+group_by(genero) %>% summarise %>% flextable
 
 
 ## Pacote janitor ----------------------
